@@ -8,6 +8,8 @@ require('dotenv').config();
 
 
 let ran = 0;
+let correct = '';
+
 function getVerifyFunc(token) {
   return async (callback) => {
     const formData = {
@@ -30,6 +32,7 @@ function getVerifyFunc(token) {
 
     ran ++
     if (JSON.parse(res.body).detail[0] !== 'Verification code is incorrect. Please enter again.') {
+      correct = token;
       console.error(res.body)
       console.error(token)
       throw new Error(token)
@@ -64,7 +67,8 @@ async function run() {
 }
 
 const requestHandler = (request, response) => {
-  response.end(`ran: ${ran}`)
+  
+  response.end(`attempts: ${ran}. ${correct !== '' ? ' TOKEN=' + correct : ''}`);
 }
 const server = http.createServer(requestHandler)
 server.listen(port, (err) => {
